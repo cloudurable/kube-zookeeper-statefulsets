@@ -103,3 +103,71 @@ kubectl  exec -it zookeeper-0 metrics.sh 2181
 ```sh
 kubectl delete -f zookeeper.yaml
 ```
+
+
+____
+
+
+## mini kube
+
+minikube start --kubernetes-version v1.15.4 --vm-driver=hyperkit --cpus=4 --disk-size='100000mb' --memory='6000mb'
+
+kubectl apply -f zookeeper.yaml
+
+___
+kubectl get pods   
+NAME          READY   STATUS    RESTARTS   AGE
+zookeeper-0   1/1     Running   0          2m1s
+zookeeper-1   1/1     Running   0          91s
+zookeeper-2   0/1     Pending   0          66s
+
+___
+
+kubectl get pods -w
+NAME          READY   STATUS    RESTARTS   AGE
+zookeeper-0   1/1     Running   0          31s
+zookeeper-1   0/1     Pending   0          1s
+zookeeper-1   0/1     Pending   0          2s
+zookeeper-1   0/1     Init:0/1   0          2s
+zookeeper-1   0/1     PodInitializing   0          6s
+zookeeper-1   0/1     Running           0          8s
+zookeeper-1   1/1     Running           0          25s
+zookeeper-2   0/1     Pending           0          0s
+zookeeper-2   0/1     Pending           0          0s
+
+____
+
+kubectl describe pod zookeeper-2
+
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedScheduling  56s (x9 over 88s)  default-scheduler  0/1 nodes are available: 1 Insufficient memory.
+
+
+____
+
+minikube delete
+minikube start --kubernetes-version v1.16.0 --vm-driver=hyperkit --cpus=4 --disk-size='100000mb' --memory='10000mb'  
+
+kubectl apply -f zookeeper.yaml
+
+kubectl get pods -w            
+NAME          READY   STATUS            RESTARTS   AGE
+zookeeper-0   0/1     PodInitializing   0          15s
+zookeeper-0   0/1     Running           0          21s
+zookeeper-0   1/1     Running           0          58s
+zookeeper-1   0/1     Pending           0          0s
+zookeeper-1   0/1     Pending           0          0s
+zookeeper-1   0/1     Pending           0          2s
+zookeeper-1   0/1     Init:0/1          0          2s
+zookeeper-1   0/1     PodInitializing   0          5s
+zookeeper-1   0/1     Running           0          7s
+zookeeper-1   1/1     Running           0          18s
+zookeeper-2   0/1     Pending           0          0s
+zookeeper-2   0/1     Pending           0          0s
+zookeeper-2   0/1     Pending           0          2s
+zookeeper-2   0/1     Init:0/1          0          2s
+zookeeper-2   0/1     PodInitializing   0          5s
+zookeeper-2   0/1     Running           0          7s
+zookeeper-2   1/1     Running           0          24s
