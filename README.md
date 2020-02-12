@@ -492,7 +492,7 @@ persistentvolumeclaim "datadir-zookeeper-1" deleted
 
 ```
 
-Now we have a pristine Kubernetes local dev cluster, let's create the statefulsets
+Now you have a pristine Kubernetes local dev cluster, let's create the `statefulsets`
 objects again.
 
 #### Create StatefulSet for ZooKeeper again with preferredDuringSchedulingIgnoredDuringExecution
@@ -507,7 +507,7 @@ statefulset.apps/zookeeper created
 
 ```
 
-As before, let's check the status of ZooKeeper pod creations. This time we can use the -w flag to watch the
+As before, let's check the status of ZooKeeper pod creations. This time you can use the -w flag to watch the
 pod creation status change as it happens.
 
 #### Use kubectl get pods to see ZooKeeper pod creations status
@@ -567,7 +567,7 @@ Events:
 
 You can see that there was `Insufficient memory` and thus `zookeeper-2` `FailedScheduling`.
 
-Clearly we can see that `kubectl describe` is a powerful tool to see errors.
+Clearly you can see that `kubectl describe` is a powerful tool to see errors.
 
 You can even use `kubectl describe` with the `statefulset` object itself.
 This means that you will have to recreate minikube with more memory.
@@ -614,7 +614,7 @@ Also doing a `kubectl get  statefulsets zookeeper`
 shows that only 2 of the 3 pods is ready as well (`zookeeper   2/3     17m`).
 
 Since the `statefulset` wouldn't fit into memory on you local dev environment,
-let's recreate minikube with more memory. We will delete minikube and then create it again.
+let's recreate minikube with more memory. You will delete minikube and then create it again.
 
 ```sh
 minikube delete
@@ -637,7 +637,7 @@ minikube start  --kubernetes-version v1.16.0 \
 ⌛  Waiting for: apiserver proxy etcd scheduler controller dns
 🏄  Done! kubectl is now configured to use "minikube"                
 ```
-It fit two ZooKeeper nodes/container/pods into 6GB so figured that kube control plane took up some space and we just need another 1.5GB for our 3rd Zookeeper node.
+It fit two ZooKeeper nodes/container/pods into 6GB so figured that kube control plane took up some space and you just need another 1.5GB for our 3rd Zookeeper node.
 It was a swag. Less memory for `minikube` means more memory for your other development tools (IDE, etc.).
 
 > By the way, this eats up a lot of memory for just a local dev environment so later in another tutorial,
@@ -733,16 +733,16 @@ It will be interesting to look at the default behavior of OpenShift later.
 
 How can we trust that this all works? You can look at logs for errors. You can connect to the kubernetes console and see if we see get see errors. I mean so far it looks like it is working! Yeah!
 
-Let's connect to an instance and see if we can run some commands. We will use network cat ([nc](https://en.wikipedia.org/wiki/Netcat))
-to send  ***ZooKeeper Commands*** also known as "The Four Letter Words" to ZooKeeper port 2181 which we configured for
+Let's connect to an instance and see if you can run some commands. You will use network cat ([nc](https://en.wikipedia.org/wiki/Netcat))
+to send  ***ZooKeeper Commands*** also known as "The Four Letter Words" to ZooKeeper port 2181 which was configured for
 the `zookeeper-service`'s `client` port service (see
 [ZooKeeper](https://zookeeper.apache.org/doc/r3.4.14/zookeeperAdmin.html) admin guide for more details on ZooKeeper Commands).
 
 The command `kubectl  exec -it zookeeper-0` will run a command on a pod. The `-it` options allows us to have an interactive
-terminal so we will run bash and poke around with some ZooKeeper commands.
+terminal so you will run bash and poke around with some ZooKeeper commands.
 
 
-### Connecting to ZooKeeper instance to and see if it is working (if we need to debug later)
+### Connecting to ZooKeeper instance to and see if it is working (if you need to debug later)
 ```sh
 kubectl  exec -it zookeeper-0 bash
 
@@ -750,7 +750,7 @@ kubectl  exec -it zookeeper-0 bash
 $ echo "Are you ok? $(echo ruok | nc 127.0.0.1 2181)"
 iamok
 
-## We use the srvr to see if this node is the leader.
+## Use the srvr to see if this node is the leader.
 $ echo srvr | nc localhost 2181 | grep Mode
 Mode: follower
 
@@ -1024,7 +1024,7 @@ java.net.UnknownHostException: zookeeper-2.zookeeper-headless.default.svc.cluste
 ```
 
 Go through the annotated output and compare that to what the ***ZooKeeper Basics*** section said.
-Also notice that there are a lot of `Processing ruok command` in the log. This is because we have INFO level logging, and the
+Also notice that there are a lot of `Processing ruok command` in the log. This is because it has INFO level logging, and the
 ZooKeeper command for health check is `ruok` which should return `imok`.
 
 #### The ruok shows up a lot in the logs beause it is used for liveness and readiness probes
@@ -1078,9 +1078,9 @@ error (1).
 
 ## Recap 1
 
-Let's recap what we did so far. We modified the yaml manifest for our ZooKeeper `statefulset`
+Let's recap what you did so far. You modified the yaml manifest for our ZooKeeper `statefulset`
 to use `requiredDuringSchedulingIgnoredDuringExecution` versus `preferredDuringSchedulingIgnoredDuringExecution`.
-We then noticed that we did not have enough memory for Minikube so we increased.
+You then noticed that you did not have enough memory for Minikube so you increased.
 Along the way you did some debugging with `kubectl describe`, `kubectl get`, and `kubectl exec`.
 Then you walked through the logs can compared what you know about `statefulsets` and ZooKeeper
 with the output of the logs.
@@ -1165,151 +1165,296 @@ zookeeper-2.zookeeper-headless.default.svc.cluster.local
 
 The zookeeper-headless service creates a domain for each pod in the statefulset.
 
-The [DNS A records](https://en.wikipedia.org/wiki/List_of_DNS_record_types) in Kubernetes DNS resolve the FQDNs to the Pods’ IP addresses.
+The [DNS A records](https://en.wikipedia.org/wiki/List_of_DNS_record_types) in Kubernetes DNS resolve the FQDNs to the Pods’ IP addresses. If the Pods gets reschedules or upgrading, the A records will put to new IP addresses, but the name will stay the same.
 
-REWORD: "If Kubernetes reschedules the Pods, it will update the A records with the Pods’ new IP addresses, but the A records names will not change.""
-____
+ZooKeeper was configured to use a config file called zoo.cfg (`/opt/zookeeper/conf/zoo.cfg` which is specified in the `start.sh` file which we will cover later). You can use `kubectl exec` to cat the contents of the zoo.cfg.
 
-## mini kube
-
-
-
-kubectl apply -f zookeeper.yaml
-
-
-kubectl get pods
-NAME          READY   STATUS    RESTARTS   AGE
-zookeeper-0   1/1     Running   0          63s
-zookeeper-1   0/1     Pending   0          47s
-
-
-___
-kubectl get pods   
-NAME          READY   STATUS    RESTARTS   AGE
-zookeeper-0   1/1     Running   0          2m1s
-zookeeper-1   1/1     Running   0          91s
-zookeeper-2   0/1     Pending   0          66s
-
-___
-
-kubectl get pods -w
-NAME          READY   STATUS    RESTARTS   AGE
-zookeeper-0   1/1     Running   0          31s
-zookeeper-1   0/1     Pending   0          1s
-zookeeper-1   0/1     Pending   0          2s
-zookeeper-1   0/1     Init:0/1   0          2s
-zookeeper-1   0/1     PodInitializing   0          6s
-zookeeper-1   0/1     Running           0          8s
-zookeeper-1   1/1     Running           0          25s
-zookeeper-2   0/1     Pending           0          0s
-zookeeper-2   0/1     Pending           0          0s
-
-____
-
-kubectl describe pod zookeeper-2
-
-Events:
-  Type     Reason            Age                From               Message
-  ----     ------            ----               ----               -------
-  Warning  FailedScheduling  56s (x9 over 88s)  default-scheduler  0/1 nodes are available: 1 Insufficient memory.
-
-
-____
-
-minikube delete
-minikube start --kubernetes-version v1.16.0 --vm-driver=hyperkit --cpus=4 --disk-size='100000mb' --memory='10000mb'  
-
-kubectl apply -f zookeeper.yaml
-
-kubectl get pods -w            
-NAME          READY   STATUS            RESTARTS   AGE
-zookeeper-0   0/1     PodInitializing   0          15s
-zookeeper-0   0/1     Running           0          21s
-zookeeper-0   1/1     Running           0          58s
-zookeeper-1   0/1     Pending           0          0s
-zookeeper-1   0/1     Pending           0          0s
-zookeeper-1   0/1     Pending           0          2s
-zookeeper-1   0/1     Init:0/1          0          2s
-zookeeper-1   0/1     PodInitializing   0          5s
-zookeeper-1   0/1     Running           0          7s
-zookeeper-1   1/1     Running           0          18s
-zookeeper-2   0/1     Pending           0          0s
-zookeeper-2   0/1     Pending           0          0s
-zookeeper-2   0/1     Pending           0          2s
-zookeeper-2   0/1     Init:0/1          0          2s
-zookeeper-2   0/1     PodInitializing   0          5s
-zookeeper-2   0/1     Running           0          7s
-zookeeper-2   1/1     Running           0          24s
-
-
-kubectl delete pvc datadir-zookeeper-1
-
-
-#### Run zookeeper yaml file
+### /opt/zookeeper/conf/zoo.cfg Contents of zookeeper config file
 
 ```sh
-kubectl apply -f zookeeper.yaml
+kubectl exec zookeeper-0 -- cat /opt/zookeeper/conf/zoo.cfg
+
+#This file was autogenerated DO NOT EDIT
+clientPort=2181
+dataDir=/var/lib/zookeeper/data
+dataLogDir=/var/lib/zookeeper/data/log
+tickTime=2000
+initLimit=10
+syncLimit=5
+maxClientCnxns=60
+minSessionTimeout=4000
+maxSessionTimeout=40000
+autopurge.snapRetainCount=3
+autopurge.purgeInteval=12
+server.1=zookeeper-0.zookeeper-headless.default.svc.cluster.local:2888:3888
+server.2=zookeeper-1.zookeeper-headless.default.svc.cluster.local:2888:3888
+server.3=zookeeper-2.zookeeper-headless.default.svc.cluster.local:2888:3888
 ```
+This file gets generated by `start.sh`'s `create_config()` function which gets included by the Dockerfile which we will cover later.
+Notice that `server.1`, `server.2`, and `server.3` properties are set to the fully qualified `URL:port` (the FDQNs) of the `zookeeper-headless` service. This is also done by a for loop in the `start.sh`'s `create_config()` function.
+The `start.sh` is specified in the zookeeper.yaml file.
 
-
-#### Get statefulsets for Zookeeper
-
-```sh
-kubectl get statefulsets
-NAME        READY   AGE
-zookeeper   0/3     5m5s
-
-```
-
-#### Check Get Pods
-```sh
-kubectl get pods
-
-# OUTPUT
-NAME          READY   STATUS    RESTARTS   AGE
-zookeeper-0   0/1     Running   2          3m14s
-```
-
-#### See the Persistent Volumes
-```sh
-kubectl get pv
-
-# OUTPUT
-NAME     CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                                                 STORAGECLASS   REASON   AGE
-pv0001   100Gi      RWO,ROX,RWX    Recycle          Bound       openshift-image-registry/crc-image-registry-storage                           37d
+#### zookeeper.yaml - specifying StatefulSet.spec.template.containers[0].command
+```yaml
 ...
-pv0030   100Gi      RWO,ROX,RWX    Recycle          Bound       default/datadir-zookeeper-0                                                   37d
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+  ...
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      ...
+      containers:
+      - name: kubernetes-zookeeper
+        imagePullPolicy: Always
+        image: "cloudurable/kube-zookeeper:0.0.1"
+        ...
+        command:
+        - sh
+        - -c
+        - "start.sh \  
+          --servers=3 \
+          --data_dir=/var/lib/zookeeper/data \
+          --data_log_dir=/var/lib/zookeeper/data/log \
+          --conf_dir=/opt/zookeeper/conf \
+          --client_port=2181 \
+          --election_port=3888 \
+          --server_port=2888 \
+          --tick_time=2000 \
+          --init_limit=10 \
+          --sync_limit=5 \
+          --heap=512M \
+          --max_client_cnxns=60 \
+          --snap_retain_count=3 \
+          --purge_interval=12 \
+          --max_session_timeout=40000 \
+          --min_session_timeout=4000 \
+          --log_level=INFO"
+
 ```
-#### See the Persistent Volumes
+
+The `start.sh` command gets passed those arguments on startup by the Kubernetes node
+that starts up the ZooKeeper pod.
+
+Using Kubernetes config maps would be a good example instead of passing all of this
+as hardcoded values.
+
+#### Achieving Consensus
+
+See [Achieving Consensus](https://kubernetes.io/docs/tutorials/stateful-application/zookeeper/#achieving-consensus).
+
+#### Sanity Testing the Ensemble
+
+This section is based off of [Sanity Testing the Ensemble](https://kubernetes.io/docs/tutorials/stateful-application/zookeeper/#sanity-testing-the-ensemble).
+
+Let's test to see if our ZooKeeper ensemble actually works.
+You will use the [zkCli.sh](https://www.tutorialspoint.com/zookeeper/zookeeper_cli.htm) which is
+the ZooKeeper command line interface.
+
+With the ZooKeeper CLI operations you can:
+* Create znodes
+* Get data
+* Watch znode for changes
+* Set data into a znode
+* Create children of a znode
+* List children of a znode
+* Check Status
+* Delete a znode
+
+A znode in ZooKeeper is like a file in that it has contents and like a folder
+in that it can have children which are other znode.
+
+Let's write the value `world` into our ZooKeeper ensemble called `/hello` into zookeeper-0.
+
+#### Use kubectl exec and zkCli.sh to write 'world' to znode /hello on zookeeper-0
 ```sh
-kubectl get pvc
+kubectl exec zookeeper-0 zkCli.sh create /hello world
 
-# OUTPUT
-NAME                             STATUS   VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-datadir-zookeeper-0              Bound    pv0030   100Gi      RWO,ROX,RWX                   2m10s
-```
-
-#### Describe Zookeeper
-
-```sh
-kubectl describe pod zookeeper-0
-
-# OUTPUT
+### OUTPUT
 ...
-Type     Reason            Age                     From                         Message
-----     ------            ----                    ----                         -------
-Warning  FailedScheduling  7m53s                   default-scheduler            pod has unbound immediate PersistentVolumeClaims
-Normal   Scheduled         7m53s                   default-scheduler            Successfully assigned default/zookeeper-0 to crc-k4zmd-master-0
-Normal   Pulling           6m36s (x4 over 7m45s)   kubelet, crc-k4zmd-master-0  Pulling image "cloudurable/kube-zookeeper:0.0.1"
-Normal   Pulled            6m35s (x4 over 7m28s)   kubelet, crc-k4zmd-master-0  Successfully pulled image "cloudurable/kube-zookeeper:0.0.1"
-Normal   Created           6m34s (x4 over 7m27s)   kubelet, crc-k4zmd-master-0  Created container kubernetes-zookeeper
-Normal   Started           6m34s (x4 over 7m27s)   kubelet, crc-k4zmd-master-0  Started container kubernetes-zookeeper
-Warning  BackOff           2m39s (x26 over 7m24s)  kubelet, crc-k4zmd-master-0  Back-off restarting failed container
+2020-02-12 01:34:07,938 [myid:] - INFO  [main:ZooKeeper@442] - Initiating client connection, connectString=localhost:2181 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@1d251891
+2020-02-12 01:34:07,967 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@1025] - Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2020-02-12 01:34:07,985 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@879] - Socket connection established to localhost/127.0.0.1:2181, initiating session
+2020-02-12 01:34:08,012 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@1299] - Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x100005d64170000, negotiated timeout = 30000
+
+WATCHER::
+
+WatchedEvent state:SyncConnected type:None path:null
+Created /hello
 ```
 
-Once you run describe you will see that the deployment is failing.
+You just wrote "world" to znode "/hello".
 
-To see why, let's checkout the logs for zookeeper-0.
+Now, let's read it back but from a different zookeeper node.
+
+#### Use kubectl exec and zkCli.sh to read from znode /hello on zookeeper-1
+```sh
+
+kubectl exec zookeeper-1 zkCli.sh get /hello
+
+### OUTPUT
+...
+WATCHER::
+
+WatchedEvent state:SyncConnected type:None path:null
+cZxid = 0x200000002
+world
+...
+```
+
+The value "world" that you put into znode "/hello" is available on every server in the ZooKeeper ensemble.
+
+#### Use kubectl exec zookeeper-$i  zkCli.sh to check every node has world
+```sh
+for i in 0 1 2; do kubectl exec zookeeper-$i  zkCli.sh get /hello | grep world; done
+```
+
+## Tolerating Node Failure
+Let's show how the consensus algorithm works. You will delete one server. Then you will try to write the ZooKeeper ensemble.
+Since two ZooKeeper servers still exist the write to the znode will work.
+
+#### Delete server, set value, read it back, --- should work.
+```sh
+kubectl delete --force=true --grace-period=0 pod zookeeper-2  &
+sleep 1; kubectl delete --force=true --grace-period=0 pod zookeeper-2  &
+sleep 1
+kubectl exec zookeeper-0 zkCli.sh set /hello world_should_work
+sleep 1
+kubectl exec zookeeper-1 zkCli.sh get /hello
+
+```
+
+The write works because the ZooKeeper ensemble has a quorum.
+Now if you delete two servers, you won't have a quorum. Note that you delete the servers
+twice and you force their deletion. Run the following commands to get a feel for how ZooKeeper works.
+
+#### Delete two server, set value, read it back, --- should not work.
+```sh
+kubectl delete --force=true --grace-period=0 pod zookeeper-2  &
+kubectl delete --force=true --grace-period=0 pod zookeeper-1  &
+sleep 1; kubectl delete --force=true --grace-period=0 pod zookeeper-2  &
+sleep 1; kubectl delete --force=true --grace-period=0 pod zookeeper-1  &
+sleep 1
+kubectl exec zookeeper-0 zkCli.sh set /hello world_should_not_work
+sleep 1
+kubectl exec zookeeper-0 zkCli.sh get /hello
+sleep 20 # If you are running manually use kubectl get pods to see status of pods restarting
+kubectl exec zookeeper-0 zkCli.sh get /hello
+```
+
+The value will be the same value you wrote the last time. The ZooKeeper ensemble needs
+a quorum before it can write to a znode.
+
+For more background information on this see [Tolerating Node Failure](https://kubernetes.io/docs/tutorials/stateful-application/zookeeper/#managing-the-zookeeper-process). The two tutorials cover this concept in a completely different but complimentary way.
+
+## Providing Durable Storage
+This section is very loosely derived from [Providing Durable Storage](https://kubernetes.io/docs/tutorials/stateful-application/zookeeper/#sanity-testing-the-ensemble) tutorial. ZooKeeper stores its data in the Kubernetes volumes using the generated persistent volume claims that you specified in the yaml manifest.
+
+#### zookeeper.yaml volume template in StatefulSet..volumeClaimTemplates
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+  serviceName: zookeeper-headless
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+  ...
+  ...      
+      volumeMounts:
+      - name: datadir
+        mountPath: /var/lib/zookeeper
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+```
+
+Notice that the volumeClaimTemplates will create persistent volume claims for the pods.
+If you shut down the whole ZooKeeper `statefulset`, the volumes will not get delete.
+And if you recreate the ZooKeeper `statefuleset`, the same value will be present.
+Let's do it.
+
+#### Delete the statefulset
+```sh
+kubectl delete statefulset zookeeper
+
+### OUTPUT
+statefulset.apps "zookeeper" delete
+```
+
+Use `kubectl get pods` to ensure that all of the pods terminate.
+Then recreate the Zookeeper `statefulset`.
+
+#### Recreate the the ZooKeeper statefulset using zookeeper.yaml
+```yaml
+kubectl apply -f zookeeper.yaml
+```
+
+Run `kubectl get pods -w -l app=zookeeper` and hit ctrl-c once all of the pods are back online.
+
+Now let's see if our data is still there.
+
+#### Read data from new ZooKeeper ensemble using old volumes
+```yaml
+kubectl exec zookeeper-0 zkCli.sh get /hello
+
+### OUTPUT
+
+...
+WATCHER::
+...
+world_should_work
+cZxid = 0x200000002
+ctime = Wed Feb 12 01:34:08 GMT 2020
+...
+
+```
+
+It works.
+Even though you deleted the `statefulset` and all of its pods, the ensemble still has the last value you set
+because the volumes are still there.
+
+
+The `volumeClaimTemplates` of the ZooKeeper StatefulSet’s spec specified a PersistentVolume for each pod.
+
+When a pod in the ZooKeeper's StatefulSet is rescheduled or upgraded, it will have the PersistentVolume mounted to the ZooKeeper server's data directory. The persistent data will still be there. This same concept would work with Cassandra or Consul or etcd or
+any database.
+
+#### Configuring a Non-Privileged User
+
+See [Configuring a Non-Privileged User](https://kubernetes.io/docs/tutorials/stateful-application/zookeeper/#configuring-a-non-privileged-user) from the original tutorial.
+
+
+
+#### Managing the ZooKeeper Process
+
+See [Managing the ZooKeeper Process](https://kubernetes.io/docs/tutorials/stateful-application/zookeeper/#managing-the-zookeeper-process) from the original tutorial.
+
+
+
 
 #### Error we found
 
