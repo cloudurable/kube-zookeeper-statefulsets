@@ -1466,8 +1466,12 @@ minikube dashboard
 
 ![](images/kubernetes-dashboard.png)
 
-Notice the pods are healthy. 
+Notice the pods are healthy.
 
+Navigate down to `Workloads->Stateful` Sets then click on `zooKeeper` in the list
+to see the ZooKeeper Stateful Set.
+
+![](images/dashboard-zookeeper-statefulset.png)
 
 #### Error we found
 
