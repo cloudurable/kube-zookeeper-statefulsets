@@ -1728,40 +1728,7 @@ crc console
 ```
 ![](images/open-shift-zookeeper-topology.png)
 
-#### Error we found
+## That is all for now
 
-```sh
-kubectl logs  --follow zookeeper-0
-
-# OUTPUT
-clientPort=2181
-dataDir=/var/lib/zookeeper/data
-...
-Creating ZooKeeper log4j configuration
-mkdir: cannot create directory '/var/lib/zookeeper': Permission denied
-chown: cannot access '/var/lib/zookeeper/data': Permission denied
-mkdir: cannot create directory '/var/lib/zookeeper': Permission denied
-chown: invalid group: 'zookeeper:USER'
-/usr/bin/start.sh: line 161: /var/lib/zookeeper/data/myid: Permission denied
-```
-
-#### Init containers
-
-
-### Connecting to instance to debug
-```sh
-kubectl  exec -it zookeeper-0 bash
-
-## Then run
-echo "Are you ok? $(echo ruok | nc 127.0.0.1 2181)"
-```
-#### Grab metrics
-```sh
-kubectl  exec -it zookeeper-0 metrics.sh 2181
-
-```
-
-#### Remove Zookeeper
-```sh
-kubectl delete -f zookeeper.yaml
-```
+We should recap this but so far we were able to create a ZooKeeper ensemble
+StatefulSet on MiniKube and OpenShift with Red Hat CodeReady Containers. 
