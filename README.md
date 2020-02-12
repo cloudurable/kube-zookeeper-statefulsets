@@ -1726,7 +1726,7 @@ crc console
 ## then login to the OpenShift web console
 
 ```
-![](open-shift-zookeeper-topology.png)
+![](images/open-shift-zookeeper-topology.png)
 
 #### Error we found
 
