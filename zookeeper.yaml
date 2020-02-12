@@ -133,6 +133,24 @@ spec:
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
+      initContainers:
+      - name: init-zoo
+        command: 
+        - chown 
+        - -R 
+        - 1000:1000
+        - /var/lib/zookeeper 
+        image: ubuntu:18.04
+        imagePullPolicy: Always 
+        name: volume-permissions 
+        resources: {} 
+        securityContext: 
+          runAsUser: 0 
+        terminationMessagePath: /dev/termination-log 
+        terminationMessagePolicy: File 
+        volumeMounts: 
+        - name: datadir
+          mountPath: /var/lib/zookeeper
   volumeClaimTemplates:
   - metadata:
       name: datadir
