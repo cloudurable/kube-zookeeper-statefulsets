@@ -1454,6 +1454,19 @@ See [Configuring a Non-Privileged User](https://kubernetes.io/docs/tutorials/sta
 See [Managing the ZooKeeper Process](https://kubernetes.io/docs/tutorials/stateful-application/zookeeper/#managing-the-zookeeper-process) from the original tutorial.
 
 
+#### Using MiniKube Dashboard
+
+You can see the pods and the statefuleset with minikube dashboard.
+
+```sh
+
+minikube dashboard
+
+```
+
+![](images/kubernetes-dashboard.png)
+
+Notice the pods are healthy. 
 
 
 #### Error we found
