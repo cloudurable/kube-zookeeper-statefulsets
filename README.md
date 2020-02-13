@@ -770,6 +770,40 @@ Mode: follower
 
 ```
 
+Note: To run a zookeeper in standalone set `StatefulSet` `replicas` to 1 and the parameter `--servers` to 1.
+When you do this the mode will be `Mode: standalone`. This is useful for local development
+to save space. This will really help if you are trying to run some tests on your local laptop.
+Also try adjusting the memory lower and allocate less cpu.
+
+#### zookeeper.yaml - Running ZooKeeper in standalone mode
+```yaml
+...
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  ...
+  replicas: 1
+    spec:
+      ...
+      containers:
+      - name: kubernetes-zookeeper
+        ...
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "0.25"
+        ...
+        command:
+        - sh
+        - -c
+        - "start.sh \
+          --servers=1
+          ..."
+
+```
+
 Please note that `zookeeper-1` is the ZooKeeper ensemble leader.
 
 The ZooKeeper command `dump` lists the outstanding sessions and ephemeral nodes but you have run this from the leader.
@@ -1731,4 +1765,4 @@ crc console
 ## That is all for now
 
 We should recap this but so far we were able to create a ZooKeeper ensemble
-StatefulSet on MiniKube and OpenShift with Red Hat CodeReady Containers. 
+StatefulSet on MiniKube and OpenShift with Red Hat CodeReady Containers.
