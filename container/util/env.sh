@@ -1,3 +1,4 @@
+#!/bin/bash
 VERSION="${VERSION:-0.0.1}"
 REPO=kube-zookeeper
 ORGANIZATION=cloudurable
