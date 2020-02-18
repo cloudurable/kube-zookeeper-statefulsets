@@ -3,6 +3,7 @@ ENV ZK_USER=zookeeper \
 ZK_DATA_DIR=/var/lib/zookeeper/data \
 ZK_DATA_LOG_DIR=/var/lib/zookeeper/log \
 ZK_LOG_DIR=/var/log/zookeeper \
+ZK_CONF_DIR=/opt/zookeeper/conf \
 JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64  \
 JAVA_DIST=openjdk-11-jre-headless
 
@@ -66,10 +67,30 @@ COPY scripts /opt/zookeeper/bin/
 RUN set -x \
     	&& useradd $ZK_USER \
         && [ `id -u $ZK_USER` -eq 1000 ] \
-        && [ `id -g $ZK_USER` -eq 1000 ] \
-        && mkdir -p $ZK_DATA_DIR $ZK_DATA_LOG_DIR $ZK_LOG_DIR /usr/share/zookeeper /tmp/zookeeper /usr/etc/ \
+        && [ `id -g $ZK_USER` -eq 1000 ]
+
+RUN set -x \
+      && mkdir -p $ZK_DATA_DIR $ZK_DATA_LOG_DIR $ZK_LOG_DIR /usr/share/zookeeper /tmp/zookeeper /usr/etc/ \
     	&& chown -R "$ZK_USER:$ZK_USER" /opt/$ZK_DIST $ZK_DATA_DIR $ZK_LOG_DIR $ZK_DATA_LOG_DIR /tmp/zookeeper \
     	&& ln -s /opt/zookeeper/conf/ /usr/etc/zookeeper \
     	&& ln -s /opt/zookeeper/bin/* /usr/bin \
     	&& ln -s /opt/zookeeper/$ZK_DIST.jar /usr/share/zookeeper/ \
     	&& ln -s /opt/zookeeper/lib/* /usr/share/zookeeper
+
+
+RUN set -x \
+      &&  chgrp -R 0 "$ZK_DATA_LOG_DIR" "$ZK_DATA_DIR" "$ZK_CONF_DIR" "$ZK_LOG_DIR"  \
+                  "/usr/bin/start.sh" "/usr/bin/metrics.sh" "/usr/bin/ready_live.sh"
+
+RUN set -x \
+      && chmod -R g=u "$ZK_DATA_LOG_DIR" "$ZK_DATA_DIR" "$ZK_CONF_DIR" "$ZK_LOG_DIR" \
+                        "/opt/zookeeper/bin/start.sh" "/opt/zookeeper/bin/metrics.sh" "/opt/zookeeper/bin/ready_live.sh"
+
+RUN set -x \
+            && chmod 777 /opt/zookeeper/bin/start.sh
+
+RUN set -x \
+            && chmod 777 /opt/zookeeper/bin/metrics.sh
+
+RUN set -x \
+            && chmod 777 /opt/zookeeper/bin/ready_live.sh
