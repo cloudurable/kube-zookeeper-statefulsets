@@ -2,8 +2,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zookeeper-headless
-  labels:
-    app: zookeeper
 spec:
   ports:
   - port: 2888
@@ -11,30 +9,21 @@ spec:
   - port: 3888
     name: leader-election
   clusterIP: None
-  selector:
-    app: zookeeper
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: zookeeper-service
-  labels:
-    app: zookeeper
 spec:
   ports:
   - port: 2181
     name: client
-  selector:
-    app: zookeeper
 ---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
   name: zookeeper-pdb
 spec:
-  selector:
-    matchLabels:
-      app: zookeeper
   maxUnavailable: 1
 ---
 apiVersion: apps/v1
@@ -42,43 +31,17 @@ kind: StatefulSet
 metadata:
   name: zookeeper
 spec:
-  selector:
-    matchLabels:
-      app: zookeeper
   serviceName: zookeeper-headless
   replicas: 1
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
   template:
-    metadata:
-      labels:
-        app: zookeeper
     spec:
-      affinity:
-        podAntiAffinity:
-          # requiredDuringSchedulingIgnoredDuringExecution:
-          #   - labelSelector:
-          #       matchExpressions:
-          #         - key: "app"
-          #           operator: In
-          #           values:
-          #           - zookeeper
-          #     topologyKey: "kubernetes.io/hostname"
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: "app"
-                      operator: In
-                      values:
-                      - zookeeper
-                topologyKey: "kubernetes.io/hostname"
       containers:
       - name: kubernetes-zookeeper
         imagePullPolicy: Always
-        image: "cloudurable/kube-zookeeper:0.0.2"
+        image: "cloudurable/kube-zookeeper:0.0.3"
         resources:
           requests:
             memory: "500Mi"
@@ -134,24 +97,24 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      # initContainers:
-      # - name: init-zoo
-      #   command: 
-      #   - chown 
-      #   - -R 
-      #   - 1000:1000
-      #   - /var/lib/zookeeper 
-      #   image: ubuntu:18.04
-      #   imagePullPolicy: Always 
-      #   securityContext: 
-      #     runAsUser: 0
-      #     # capabilities:
-      #     #   add: ["CHOWN"]
-      #   terminationMessagePath: /dev/termination-log 
-      #   terminationMessagePolicy: File 
-      #   volumeMounts: 
-      #   - name: datadir
-      #     mountPath: /var/lib/zookeeper
+      initContainers:
+        - name: init-zoo
+          command: 
+            - chown 
+            - -R 
+            - 1000:1000
+            - /var/lib/zookeeper 
+          image: ubuntu:18.04
+          imagePullPolicy: Always 
+          resources: {} 
+          securityContext: 
+            runAsUser: 0 
+          terminationMessagePath: /dev/termination-log 
+          terminationMessagePolicy: File 
+          volumeMounts: 
+          - name: datadir
+            mountPath: /var/lib/zookeeper
+
   volumeClaimTemplates:
   - metadata:
       name: datadir

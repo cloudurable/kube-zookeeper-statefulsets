@@ -79,6 +79,8 @@ RUN set -x \
 
 
 RUN set -x \
+                  && chmod 777 $ZK_DATA_DIR $ZK_LOG_DIR $ZK_DATA_LOG_DIR
+RUN set -x \
       &&  chgrp -R 0 "$ZK_DATA_LOG_DIR" "$ZK_DATA_DIR" "$ZK_CONF_DIR" "$ZK_LOG_DIR"  \
                   "/usr/bin/start.sh" "/usr/bin/metrics.sh" "/usr/bin/ready_live.sh"
 
