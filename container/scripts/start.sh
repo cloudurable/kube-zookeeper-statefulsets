@@ -79,6 +79,99 @@ SNAP_RETAIN_COUNT=3
 PURGE_INTERVAL=0
 SERVERS=1
 
+
+if [ "x${ZOOKEEPER_CLIENT_PORT}" != "x" ]
+then
+  CLIENT_PORT="${ZOOKEEPER_CLIENT_PORT}"
+fi
+
+if [ "x${ZOOKEEPER_SERVER_PORT}" != "x" ]
+then
+  SERVER_PORT="${ZOOKEEPER_SERVER_PORT}"
+fi
+
+if [ "x${ZOOKEEPER_ELECTION_PORT}" != "x" ]
+then
+  ELECTION_PORT="${ZOOKEEPER_ELECTION_PORT}"
+fi
+
+if [ "x${ZOOKEEPER_TICK_TIME}" != "x" ]
+then
+  TICK_TIME="${ZOOKEEPER_TICK_TIME}"
+fi
+
+if [ "x${ZOOKEEPER_INIT_LIMIT}" != "x" ]
+then
+  INIT_LIMIT="${ZOOKEEPER_INIT_LIMIT}"
+fi
+
+if [ "x${ZOOKEEPER_SYNC_LIMIT}" != "x" ]
+then
+  SYNC_LIMIT="${ZOOKEEPER_SYNC_LIMIT}"
+fi
+
+if [ "x${ZOOKEEPER_HEAP}" != "x" ]
+then
+  HEAP="${ZOOKEEPER_HEAP}"
+fi
+
+if [ "x${ZOOKEEPER_MAX_CLIENT_CNXNS}" != "x" ]
+then
+  MAX_CLIENT_CNXNS="${ZOOKEEPER_MAX_CLIENT_CNXNS}"
+fi
+
+if [ "x${ZOOKEEPER_SNAP_RETAIN_COUNT}" != "x" ]
+then
+  SNAP_RETAIN_COUNT="${ZOOKEEPER_SNAP_RETAIN_COUNT}"
+fi
+
+if [ "x${ZOOKEEPER_CONF_DIR}" != "x" ]
+then
+  CONF_DIR="${ZOOKEEPER_CONF_DIR}"
+fi
+
+if [ "x${ZOOKEEPER_LOG_DIR}" != "x" ]
+then
+  LOG_DIR="${ZOOKEEPER_LOG_DIR}"
+fi
+
+if [ "x${ZOOKEEPER_DATA_LOG_DIR}" != "x" ]
+then
+  DATA_LOG_DIR="${ZOOKEEPER_DATA_LOG_DIR}"
+fi
+
+if [ "x${ZOOKEEPER_DATA_DIR}" != "x" ]
+then
+  DATA_DIR="${ZOOKEEPER_DATA_DIR}"
+fi
+
+if [ "x${ZOOKEEPER_LOG_LEVEL}" != "x" ]
+then
+  LOG_LEVEL="${ZOOKEEPER_LOG_LEVEL}"
+fi
+
+if [ "x${ZOOKEEPER_PURGE_INTERVAL}" != "x" ]
+then
+  PURGE_INTERVAL="${ZOOKEEPER_PURGE_INTERVAL}"
+fi
+
+if [ "x${ZOOKEEPER_SERVERS}" != "x" ]
+then
+  SERVERS="${ZOOKEEPER_SERVERS}"
+fi
+
+if [ "x${ZOOKEEPER_MIN_SESSION_TIMEOUT}" != "x" ]
+then
+  MIN_SESSION_TIMEOUT="${ZOOKEEPER_MIN_SESSION_TIMEOUT}"
+fi
+
+if [ "x${ZOOKEEPER_MAX_SESSION_TIMEOUT}" != "x" ]
+then
+  MAX_SESSION_TIMEOUT="${ZOOKEEPER_MAX_SESSION_TIMEOUT}"
+fi
+
+
+
 function print_usage() {
 echo "\
 Usage: start-zookeeper [OPTIONS]
