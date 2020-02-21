@@ -3,5 +3,3 @@ bases:
 
 patchesStrategicMerge:
 - zookeeper-dev3.yml
-
-# namePrefix: "dev-"
