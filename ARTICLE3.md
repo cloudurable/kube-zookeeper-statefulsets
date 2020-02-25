@@ -63,7 +63,7 @@ Before starting this tutorial, you should be familiar with the following Kuberne
 * PodAntiAffinity
 * kubectl CLI
 
-Recall that the tutorial on the Kubernetes site required a cluster with at least four nodes (with 2 CPUs and 4 GiB of memory), this one will work with local Kubernetes dev environments, namely, Open Shift CRC and MiniKube. This tutorial will show how to use [Kustomize](https://kustomize.io/) to target local dev and a real cluster. 
+Recall that the tutorial on the Kubernetes site required a cluster with at least four nodes (with 2 CPUs and 4 GiB of memory), this one will work with local Kubernetes dev environments, namely, Open Shift CRC and MiniKube. This tutorial will show how to use [Kustomize](https://kustomize.io/) to target local dev and a real cluster.
 
 ___
 
@@ -126,6 +126,27 @@ Notice we have an `overlays` directory and a `base` directory.
 The base directory will look a lot like our `zookeeper.yml` manifest file from the last two tutorials.
 The `overlays` directory has a directory per target environment, namely, `prod`, `dev` and `dev-3`.
 Then you can split the data specific to production (`prod`) or lightweight `dev` or our `dev-3` (dev but running three zookeeper instances in the ensemble).
+
+
+#### Bases and overlays for this tutorial
+
+```
++---------------+            +---------------------+      +-------------------+
+|               |  overrides |                     |  ovr |                   |
+|  base         +----------->+    overlay/dev      +------> overlay/dev-3     |
+|               |            |                     |      |                   |
++--------+------+            +---------------------+      +-------------------+
+         |
+         |
+         |
+         |                           +----------------------+
+         |         overrides         |                      |
+         +-------------------------->+    overlay/prod      |
+                                     |                      |
+                                     +----------------------+
+
+```
+
 
 
 ## Base Directory
@@ -538,8 +559,8 @@ The directive `patchesStrategicMerge` is used to override attributes from a base
 
 
  Kustomize is a template-free way to customize Kubernetes object files by using overlays and [directives](https://kubectl.docs.kubernetes.io/pages/reference/kustomize.html) called transformers, meta sources, and generators.
- Kustomize is simpler to use than a full blown template engine like Helm and allows you
- to have mulitple deployment environments from the same base manifest files.
+ Kustomize is simpler to use than a full-blown template engine like Helm and allows you
+ to have multiple deployment environments from the same base manifest files.
 
 
 #### Bases and overlays for this tutorial
