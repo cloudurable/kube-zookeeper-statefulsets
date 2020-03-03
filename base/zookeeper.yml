@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-headless
+spec:
+  ports:
+  - port: 2888
+    name: server
+  - port: 3888
+    name: leader-election
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-service
+spec:
+  ports:
+  - port: 2181
+    name: client
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: zookeeper-pdb
+spec:
+  maxUnavailable: 1
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  serviceName: zookeeper-headless
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    spec:
+      containers:
+      - name: kubernetes-zookeeper
+        imagePullPolicy: Always
+        image: "cloudurable/kube-zookeeper:0.0.4"
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "0.25"
+        ports:
+        - containerPort: 2181
+          name: client
+        - containerPort: 2888
+          name: server
+        - containerPort: 3888
+          name: leader-election
+        command:
+        - sh
+        - -c
+        - "start.sh --servers=3 "
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "ready_live.sh 2181"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "ready_live.sh 2181"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: datadir
+          mountPath: /var/lib/zookeeper
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: init-zoo
+          command: 
+            - chown 
+            - -R 
+            - 1000:1000
+            - /var/lib/zookeeper 
+          image: ubuntu:18.04
+          imagePullPolicy: Always 
+          resources: {} 
+          securityContext: 
+            runAsUser: 0 
+          terminationMessagePath: /dev/termination-log 
+          terminationMessagePolicy: File 
+          volumeMounts: 
+          - name: datadir
+            mountPath: /var/lib/zookeeper
+
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi

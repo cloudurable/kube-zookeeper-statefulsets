@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: kubernetes-zookeeper
+        command:
+          - sh
+          - -c
+          - "start.sh --servers=3"

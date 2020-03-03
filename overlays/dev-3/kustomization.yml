@@ -1,0 +1,5 @@
+bases:
+- ../dev/
+
+patchesStrategicMerge:
+- zookeeper-dev3.yml

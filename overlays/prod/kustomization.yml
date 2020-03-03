@@ -1,0 +1,8 @@
+bases:
+- ../../base/
+
+patchesStrategicMerge:
+- zookeeper-prod.yml
+
+commonLabels:
+  deployment-env: production 
